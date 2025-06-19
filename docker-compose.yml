@@ -1,7 +1,7 @@
 services:
 
 
-
+# ——— Основная база (app) ———
   postgres:
     image: postgres:17
     container_name: postgres_pictures
@@ -28,6 +28,30 @@ services:
         max-size: "10m"
         max-file: "5"
         compress: "true"
+    networks:
+      - app_network
+
+    # ——— Тестовая база ———
+  postgres_test:
+    image: postgres:17
+    container_name: postgres_test
+    env_file:
+      - .env.docker-compose
+    environment:
+      POSTGRES_DB: ${TEST_DB__TEST_NAME}
+      POSTGRES_USER: ${TEST_DB__TEST_USER}
+      POSTGRES_PASSWORD: ${TEST_DB__TEST_PASSWORD}
+    volumes:
+      - ./postgres-data_test:/var/lib/postgresql/data
+#      - ./initdb/test:/docker-entrypoint-initdb.d
+    ports:
+      - "${TEST_DB__TEST_PORT}:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${TEST_DB__TEST_USER} -d ${TEST_DB__TEST_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - app_network
 

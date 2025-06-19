@@ -172,3 +172,4 @@ cython_debug/
 
 pgadmin-data
 postgres-data
+postgres-data_test
