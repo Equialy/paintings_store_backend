@@ -6,7 +6,7 @@ from pydantic.alias_generators import to_camel
 
 class UsersSchema(BaseModel):
     id: int = Field(..., ge=1)
-    username: str = Field(..., max_length=255)
+    username: str = Field(..., min_length=3, max_length=255)
     email: str
     password: str = Field(..., min_length=4, max_length=255)
     is_active: bool
@@ -30,7 +30,7 @@ class TokenJWT(BaseModel):
     token_type: str
 
 
-class UsersSchemaAuth(BaseModel):
+class UsersSchemaAuth(UsersSchema):
     username: str = Field(..., max_length=255)
     email: str
     password: str = Field(..., min_length=4, max_length=255)

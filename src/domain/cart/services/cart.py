@@ -1,5 +1,6 @@
 from src.domain.cart.interfaces.cart import CartRepositoryProtocol
-from src.domain.cart.schemas.cart import CartItemPaginationResponse, CartItemSchema, CartItemRead
+from src.domain.cart.schemas.cart import CartItemPaginationResponse, CartItemSchema, CartItemRead, CartItemCreate, \
+    CartItemUpdate
 
 
 class CartServiceImpl:
@@ -8,9 +9,16 @@ class CartServiceImpl:
 
     async def get_cart_by_user(self, user_id: int) -> list[CartItemRead]:
         return await self.cart_factory_repository.get_cart(user_id=user_id)
-    #
-    # async def add_borrow(self, book_id: int, reader_id: int) -> CartItemSchema:
-    #     return await self.cart_factory_repository.add(book_id=book_id, reader_id=reader_id)
-    #
-    # async def return_book_by_borrow(self, book_id: int, borrow_id: int) -> CartItemSchema:
-    #     return await self.cart_factory_repository.return_borrow(book_id=book_id, borrow_id=borrow_id)
+
+    async def add_cart(self, user_id: int, item: CartItemCreate) -> CartItemSchema:
+        return await self.cart_factory_repository.add(user_id=user_id, item=item)
+
+    async def update_cart(self,user_id: int, item_id: int, update: CartItemUpdate) -> CartItemRead:
+        return await self.cart_factory_repository.update_item(user_id=user_id, item_id=item_id, update=update)
+
+    async def remove_cart(self, item_id: int, user_id: int) -> CartItemSchema:
+        return await self.cart_factory_repository.remove_item(item_id=item_id, user_id=user_id)
+
+    async def clear_cart_service(self, user_id: int) -> CartItemRead:
+        return await self.cart_factory_repository.clear_cart(user_id=user_id)
+
