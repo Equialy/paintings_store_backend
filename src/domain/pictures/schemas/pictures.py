@@ -25,6 +25,23 @@ class PictureUpdateSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
 
 
+
+
+class CategoryCreate(BaseModel):
+    title: str = Field(None, max_length=100)
+
+    model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
+
+
+class CategoryRead(CategoryCreate):
+    id: int = Field(None, ge=1)
+
+    model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
+
+
+
+
+
 class PictureReadSchema(BaseModel):
     id: int
     title: str

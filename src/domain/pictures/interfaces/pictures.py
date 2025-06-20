@@ -1,7 +1,7 @@
 from typing import Protocol, List
 
 from src.domain.pictures.schemas.pictures import PictureReadSchema, PictureCreateSchema, PictureUpdateSchema, \
-    PaginationParamsPictures
+    PaginationParamsPictures, CategoryCreate, CategoryRead
 
 
 class PictureRepositoryProtocol(Protocol):
@@ -15,9 +15,17 @@ class PictureRepositoryProtocol(Protocol):
 
     async def get_all(self, pagination: PaginationParamsPictures) -> list[PictureReadSchema]: ...
 
+    async def create_category(self, schema: CategoryCreate) -> CategoryRead: ...
+
+    async def list_category(self) -> list[CategoryRead]: ...
+
+
+
 
 class PictureServiceProtocol(Protocol):
     async def create_picture(self, schema: PictureCreateSchema) -> PictureReadSchema: ...
+
+    async def create_category(self, schema: CategoryCreate) -> CategoryRead: ...
 
     async def update_picture(self, picture_id: int, schema: PictureUpdateSchema) -> PictureReadSchema: ...
 
@@ -25,4 +33,7 @@ class PictureServiceProtocol(Protocol):
 
     async def get_picture(self, picture_id: int) -> PictureReadSchema: ...
 
-    async def list_pictures(self) -> List[PictureReadSchema]: ...
+    async def list_pictures(self, pagination: PaginationParamsPictures) -> List[PictureReadSchema]: ...
+
+    async def get_all_category(self) -> list[CategoryRead]: ...
+

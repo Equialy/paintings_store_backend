@@ -2,7 +2,7 @@ import logging
 
 from src.domain.pictures.interfaces.pictures import PictureRepositoryProtocol
 from src.domain.pictures.schemas.pictures import PictureReadSchema, PictureCreateSchema, PictureUpdateSchema, \
-    PaginationParamsPictures
+    PaginationParamsPictures, CategoryCreate, CategoryRead
 from src.exceptions.exception_base import NotFoundError, QuantityError
 
 logger = logging.getLogger(__name__)
@@ -15,6 +15,14 @@ class PicturesServiceImpl:
 
     async def create_picture(self, schema: PictureCreateSchema) -> PictureReadSchema:
         return await self.pictures_factory_repository.create(schema)
+
+    async def create_category(self, schema: CategoryCreate) -> CategoryRead:
+        return await self.pictures_factory_repository.create_category(schema=schema)
+
+    async def get_all_category(self) -> list[CategoryRead]:
+        return await self.pictures_factory_repository.list_category()
+
+
 
     async def update_picture(self, picture_id: int, schema: PictureUpdateSchema) -> PictureReadSchema:
         return await self.pictures_factory_repository.update(picture_id, schema)
