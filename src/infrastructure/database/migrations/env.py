@@ -10,6 +10,7 @@ from src.settings import settings
 from src.infrastructure.database.models.users import Users
 from src.infrastructure.database.models.pictures import Pictures, Categories
 from src.infrastructure.database.models.cart_item import CartItem
+from src.infrastructure.database.models.orders import Order, OrderItem
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

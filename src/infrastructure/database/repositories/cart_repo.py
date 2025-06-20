@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.domain.cart.schemas.cart import CartItemRead
+from src.domain.cart.schemas.cart import CartItemRead, CartItemCreate, CartItemSchema, CartItemUpdate
 from src.infrastructure.database.models.cart_item import CartItem
 
 import sqlalchemy as sa
+
 
 class CartRepositoryImpl:
     def __init__(self, session: AsyncSession):
@@ -17,4 +18,28 @@ class CartRepositoryImpl:
         items = result.scalars().all()
         return [CartItemRead.model_validate(i) for i in items]
 
-    # TODO: add_item, remove_item, update_item, clear_cart
+    async def add(self, user_id: int, item: CartItemCreate) -> CartItemSchema:
+        stmt = sa.insert(self.model).values(user_id=user_id, **item.model_dump()).returning(self.model)
+        execute = await self.session.execute(stmt)
+        result = execute.scalar_one()
+        return CartItemSchema.model_validate(result)
+
+    async def remove_item(self, item_id: int, user_id: int) -> CartItemSchema:
+        stmt = sa.delete(self.model).where(self.model.id==item_id, self.model.user_id==user_id).returning(self.model)
+        execute = await self.session.execute(stmt)
+        result = execute.scalar_one()
+        return CartItemSchema.model_validate(result)
+
+    async def update_item(self, user_id: int, item_id: int, update: CartItemUpdate) -> CartItemRead:
+        stmt = sa.update(self.model).where(self.model.id==item_id,
+                                           self.model.user_id==user_id,
+                                            ).values(quantity=update.quantity).returning(self.model)
+        execute = await self.session.execute(stmt)
+        result = execute.scalar_one()
+        return CartItemRead.model_validate(result)
+
+    async def clear_cart(self, user_id: int) -> CartItemRead:
+        stmt = sa.delete(self.model).where(self.model.user_id==user_id).returning(self.model)
+        execute = await self.session.execute(stmt)
+        result = execute.scalar_one()
+        return CartItemRead.model_validate(result)

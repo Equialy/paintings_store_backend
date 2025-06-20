@@ -4,8 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
 from src.domain.pictures.schemas.pictures import PaginationParamsPictures, PictureReadSchema, PictureCreateSchema, \
-    PictureUpdateSchema
-from src.infrastructure.database.models.pictures import Pictures
+    PictureUpdateSchema, CategoryRead, CategoryCreate
+from src.infrastructure.database.models.pictures import Pictures, Categories
 from src.utils.sorted_functions import get_sort_column
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,6 @@ class PicturesRepositoryImpl:
         query = sa.select(self.model).where(self.model.id == picture_id).with_for_update()
         execute = await self.session.execute(query)
         result = execute.scalar_one()
-        logger.info("Полчуение картины по ID %s", picture_id)
 
         return PictureReadSchema.model_validate(result)
 
@@ -43,6 +42,20 @@ class PicturesRepositoryImpl:
         result = model.scalar_one()
         logger.info("Картина %r создана", result.id)
         return PictureReadSchema.model_validate(result)
+
+    async def create_category(self, schema: CategoryCreate) -> CategoryRead:
+        stmt = sa.insert(Categories).values(title=schema.title).returning(Categories)
+        model = await self.session.execute(stmt)
+        result = model.scalar_one()
+        logger.info("Создана категория: %s", result)
+        return CategoryRead.model_validate(result)
+
+    async def list_category(self) -> list[CategoryRead]:
+        stmt = sa.select(Categories)
+        model = await self.session.execute(stmt)
+        result = model.scalars().all()
+        return [CategoryRead.model_validate(obj) for obj in result ]
+
 
     async def update(self, picture_id: int, schema: PictureUpdateSchema) -> PictureReadSchema:
         stmt = (sa.update(self.model)

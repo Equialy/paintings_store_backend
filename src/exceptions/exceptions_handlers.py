@@ -14,7 +14,7 @@ def register_exceptions_hanlder(app: FastAPI):
     def handle_validation_error(request: Request, exc: ValidationError):
         return ORJSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content={"msg": "Unhandled Error", "err": exc.errors()},
+            content={"msg": "Unhandled Error", "err": str(exc.errors())},
         )
 
     @app.exception_handler(RequestValidationError)
@@ -58,8 +58,6 @@ def register_exceptions_hanlder(app: FastAPI):
 
     @app.exception_handler(JWTError)
     def handle_unauthorized_error(request: Request, exc: JWTError):
-        print(f"Ответ из хендлера не аутентифицирован")
-
         return ORJSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={"msg": "invalid token", "err": str(exc)}
@@ -81,7 +79,7 @@ def register_exceptions_hanlder(app: FastAPI):
             detail = "Ошибка при сохранении в базу данных"
         return ORJSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"err": detail}
+            content={"err": str(exc)}
         )
 
     @app.exception_handler(ContentTypeError)

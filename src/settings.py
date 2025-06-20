@@ -82,6 +82,7 @@ class Settings(BaseSettings):
     """
     Настройки модели.
     """
+    debug: bool
     base_url: str
     api: ApiPrefix = ApiPrefix()
 
