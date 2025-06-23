@@ -3,7 +3,10 @@ import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
-from src.domain.accounts.schemas.user import UsersSchemaAuth, UsersSchema, UsersSchemaAdd
+from src.domain.accounts.schemas.user import (
+    UsersSchemaAuth,
+    UsersSchema,
+)
 from src.infrastructure.database.models.users import Users
 
 log = logging.getLogger(__name__)
@@ -11,7 +14,10 @@ log = logging.getLogger(__name__)
 
 class UserRepositoryImpl:
 
-    def __init__(self, session: AsyncSession,):
+    def __init__(
+        self,
+        session: AsyncSession,
+    ):
         self.session = session
         self.model = Users
 
@@ -24,7 +30,11 @@ class UserRepositoryImpl:
         return UsersSchema.model_validate(user_obj)
 
     async def create_user(self, user: UsersSchemaAuth) -> UsersSchema:
-        stmt = sa.insert(self.model).values(user.model_dump(exclude_unset=True)).returning(self.model)
+        stmt = (
+            sa.insert(self.model)
+            .values(user.model_dump(exclude_unset=True))
+            .returning(self.model)
+        )
         result = await self.session.execute(stmt)
         created = result.scalar_one()
         return UsersSchema.model_validate(created)

@@ -6,7 +6,6 @@ from sqlalchemy.orm import DeclarativeBase
 from src.settings import settings
 
 
-
 DB_URL = settings.db.url_db
 
 
