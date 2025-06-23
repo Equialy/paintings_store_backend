@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import logging
+
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 
 from src.domain.accounts.schemas.user import UsersSchemaAuth
 from src.domain.orders.schemas.orders import (
@@ -16,8 +18,10 @@ from src.presentation.dependencies.admin.admin_di import get_current_admin_user
 from src.presentation.dependencies.orders.order_di import OrderService
 from src.presentation.dependencies.pictures.services import PicturesService
 from src.settings import settings
+from src.utils.storage import save_upload_file
 
 router = APIRouter(prefix=settings.api.v1.prefix, tags=["Admin"])
+logger = logging.getLogger(__name__)
 
 
 @router.get("/admin/orders", response_model=list[OrderRead])
@@ -77,16 +81,33 @@ async def add_picture(
     return await picture_service.create_picture(schema=picture)
 
 
-@router.put("/admin/pictures/{book_id}", response_model=PictureReadSchema)
+@router.put("/admin/pictures/{picture_id}", response_model=PictureReadSchema)
 async def update_picture(
     picture: PictureUpdateSchema,
     picture_service: PicturesService,
+    file: UploadFile,
     user: UsersSchemaAuth = Depends(get_current_admin_user),
 ) -> PictureReadSchema:
+    file_path = await save_upload_file(file)
     return await picture_service.update_picture(picture_id=picture)
 
 
-@router.delete("/admin/pictures/{book_id}", response_model=PictureReadSchema)
+@router.patch("/admin/pictures/{picture_id}", response_model=PictureReadSchema)
+async def patch_picture(
+    # picture: PictureUpdateSchema,
+    picture_service: PicturesService,
+    picture_id: int,
+    file: UploadFile,
+    user: UsersSchemaAuth = Depends(get_current_admin_user),
+) -> PictureReadSchema:
+    file_path = await save_upload_file(file)
+    logger.info("формирование url %s", file_path)
+    return await picture_service.patch_picture(
+        file_path=file_path, picture_id=picture_id
+    )
+
+
+@router.delete("/admin/pictures/{picture_id}", response_model=PictureReadSchema)
 async def delete_picture(
     picture_id: int,
     picture_service: PicturesService,

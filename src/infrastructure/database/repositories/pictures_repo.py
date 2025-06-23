@@ -57,8 +57,23 @@ class PicturesRepositoryImpl:
         stmt = sa.insert(Categories).values(title=schema.title).returning(Categories)
         model = await self.session.execute(stmt)
         result = model.scalar_one()
-        logger.info("Создана категория: %s", result)
         return CategoryRead.model_validate(result)
+
+    async def patch_picture(
+        self,
+        file_path: str,
+        picture_id: int,
+    ) -> PictureReadSchema:
+        logger.info("добавление Url: %s", file_path)
+        stmt = (
+            sa.update(self.model)
+            .where(self.model.id == picture_id)
+            .values(image_url=file_path)
+            .returning(self.model)
+        )
+        model = await self.session.execute(stmt)
+        result = model.scalar_one()
+        return PictureReadSchema.model_validate(result)
 
     async def list_category(self) -> list[CategoryRead]:
         stmt = sa.select(Categories)
