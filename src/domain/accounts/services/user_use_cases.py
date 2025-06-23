@@ -14,7 +14,7 @@ class UserServiceImpl:
         self.pwd_mgr = pwd_manager
         self.jwt_mgr = jwt_manager
 
-    async def register_user(self, user_in: UsersSchemaAdd) -> TokenJWT:
+    async def register_user(self, user_in: UsersSchemaAuth) -> TokenJWT:
         hashed = self.pwd_mgr.hash_password(user_in.password)
         user_obj = UsersSchemaAuth(
             username=user_in.username,

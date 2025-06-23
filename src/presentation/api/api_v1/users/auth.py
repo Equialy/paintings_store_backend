@@ -31,7 +31,7 @@ async def auth_user_jwt(
 
 @router.post("/register", response_model=TokenJWT)
 async def register_user(
-        user_in: UsersSchemaAdd,
+        user_in: UsersSchemaAuth,
         use_case: UserService
 ) -> TokenJWT:
     return await use_case.register_user(user_in)

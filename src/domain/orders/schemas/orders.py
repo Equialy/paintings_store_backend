@@ -27,10 +27,6 @@ class OrderStatus(StrEnum):
     SHIPPED   = "Shipped"
     DELIVERED = "Delivered"
 
-
-
-
-
 class OrderCreate(OrderBase):
     items: List[OrderItemCreate]
 
@@ -41,17 +37,6 @@ class OrderItemRead(OrderItemBase):
     id: int
     model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
 
-
-
-# class OrderReadSchema(BaseModel):
-#     id: int
-#     user_id: int
-#     address: str
-#     phone: str
-#     status: str
-#     total: float
-#     created_at: datetime
-#     items: List[OrderItemRead]
 
 
 class OrderRead(OrderBase):

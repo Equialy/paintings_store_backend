@@ -13,6 +13,7 @@ def create_app() -> FastAPI:
     config_logging(level=logging.INFO)
     app = FastAPI(
         docs_url='/docs',
+        redoc_url="/redoc",
         openapi_url='/docs.json',
     )
     app = apply_routes(apply_middleware(app))

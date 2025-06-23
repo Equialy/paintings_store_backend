@@ -30,7 +30,7 @@ class TokenJWT(BaseModel):
     token_type: str
 
 
-class UsersSchemaAuth(UsersSchema):
+class UsersSchemaAuth(BaseModel):
     username: str = Field(..., max_length=255)
     email: str
     password: str = Field(..., min_length=4, max_length=255)

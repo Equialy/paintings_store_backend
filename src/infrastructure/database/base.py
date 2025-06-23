@@ -12,7 +12,7 @@ DB_URL = settings.db.url_db
 
 asyncio_engine = create_async_engine(
     DB_URL,
-    echo=settings.debug
+    # echo=settings.debug
 )
 
 AsyncSessionFactory = async_sessionmaker(
