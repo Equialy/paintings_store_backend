@@ -5,7 +5,10 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.accounts.interfaces.auth import AuthServiceProtocol
-from src.domain.accounts.interfaces.user import UserRepositoryProtocol, UserServiceProtocol
+from src.domain.accounts.interfaces.user import (
+    UserRepositoryProtocol,
+    UserServiceProtocol,
+)
 from src.domain.accounts.schemas.user import UsersSchemaAuth
 from src.domain.accounts.services.auth_service import AuthServiceImpl
 from src.domain.accounts.services.jwt import JWTService
@@ -21,6 +24,7 @@ Session = Annotated[AsyncSession, Depends(get_async_session)]
 
 # --- repositories ---
 
+
 def get_user_repository(session: Session) -> UserRepositoryProtocol:
     return UserRepositoryImpl(session)
 
@@ -30,25 +34,31 @@ UsersFactoryRepository = Annotated[UserRepositoryProtocol, Depends(get_user_repo
 
 # --- services ---
 
-def get_user_service(user_factory_repository: UsersFactoryRepository) -> UserServiceProtocol:
-    return  UserServiceImpl(user_factory_repository, PasswordManagerImpl(), JWTService())
+
+def get_user_service(
+    user_factory_repository: UsersFactoryRepository,
+) -> UserServiceProtocol:
+    return UserServiceImpl(user_factory_repository, PasswordManagerImpl(), JWTService())
+
 
 UserService = Annotated[UserServiceProtocol, Depends(get_user_service)]
 
 
-def get_auth_service(auth_factory_repositories: UsersFactoryRepository ) :
-    return AuthServiceImpl(auth_factory_repositories, PasswordManagerImpl(), JWTService())
-
+def get_auth_service(auth_factory_repositories: UsersFactoryRepository):
+    return AuthServiceImpl(
+        auth_factory_repositories, PasswordManagerImpl(), JWTService()
+    )
 
 
 AuthService = Annotated[AuthServiceProtocol, Depends(get_auth_service)]
 
 
-async def get_current_auth_user(auth_service: AuthService, user_service: UserService, token: str = Depends(oauth2_schema)) -> UsersSchemaAuth:
+async def get_current_auth_user(
+    auth_service: AuthService,
+    user_service: UserService,
+    token: str = Depends(oauth2_schema),
+) -> UsersSchemaAuth:
     payload = auth_service.decode_jwt(token)
     email = payload.get("sub")
     user = await user_service.get_by_email(email=email)
-    # if not user:
-    #     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="token invalid")
     return user
-

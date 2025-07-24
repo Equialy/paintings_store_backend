@@ -1,9 +1,9 @@
 from datetime import datetime
-from sqlalchemy import (
-    Integer, String, ForeignKey, DateTime, Numeric, func
-)
+from sqlalchemy import Integer, String, ForeignKey, DateTime, Numeric, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.infrastructure.database.base import Base
+from src.infrastructure.database.models.pictures import Pictures
+
 
 class Order(Base):
     __tablename__ = "orders"
@@ -15,16 +15,19 @@ class Order(Base):
     address: Mapped[str] = mapped_column(String(255), nullable=False)
     phone: Mapped[str] = mapped_column(String(20), nullable=False)
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="Pending")
-    total: Mapped[Numeric] = mapped_column(Numeric(18,2), nullable=False)
+    total: Mapped[Numeric] = mapped_column(Numeric(18, 2), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
     user = relationship("Users", back_populates="orders")
     items = relationship(
-        "OrderItem", back_populates="order",
-        cascade="all, delete-orphan"
+        "OrderItem", back_populates="order", cascade="all, delete-orphan"
     )
+
+    def __str__(self):
+        return f"Order {self.id}"
+
 
 class OrderItem(Base):
     __tablename__ = "order_items"
@@ -37,7 +40,10 @@ class OrderItem(Base):
         Integer, ForeignKey("pictures.id", ondelete="SET NULL"), nullable=True
     )
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    price: Mapped[Numeric] = mapped_column(Numeric(18,2), nullable=False)
+    price: Mapped[Numeric] = mapped_column(Numeric(18, 2), nullable=False)
 
-    order = relationship("Order", back_populates="items")
-    picture = relationship("Pictures")
+    order: Mapped["Order"] = relationship("Order", back_populates="items")
+    picture: Mapped["Pictures"] = relationship("Pictures")
+
+    def __str__(self):
+        return f"{self.id}"

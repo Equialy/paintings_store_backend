@@ -1,4 +1,5 @@
-ALLOWED_SORT_FIELDS = {"id","title", "author", "quantity"}
+ALLOWED_SORT_FIELDS = {"id", "title", "author", "quantity", "price"}
+
 
 def get_sort_column(model, column_name: str):
     if column_name not in ALLOWED_SORT_FIELDS:

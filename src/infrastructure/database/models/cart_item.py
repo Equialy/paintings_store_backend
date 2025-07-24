@@ -1,8 +1,5 @@
 from datetime import datetime
-from sqlalchemy import (
-    Integer, ForeignKey, Numeric, DateTime,
-    func
-)
+from sqlalchemy import Integer, ForeignKey, Numeric, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.infrastructure.database.base import Base
 from src.infrastructure.database.models.pictures import Pictures
@@ -17,15 +14,19 @@ class CartItem(Base):
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     picture_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("pictures.id", ondelete="CASCADE"), nullable=False, index=True
+        Integer,
+        ForeignKey("pictures.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     added_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        nullable=False
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
     # связи
     user: Mapped["Users"] = relationship("Users", back_populates="cart_items")
     picture: Mapped["Pictures"] = relationship("Pictures")
+
+    def __str__(self):
+        return f"{self.id}"

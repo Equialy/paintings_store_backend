@@ -48,6 +48,11 @@ class ApiPrefix(BaseModel):
         return path.removeprefix("/")
 
 
+class OAuthGoogle(BaseModel):
+    client_id: str
+    client_secret: str
+
+
 class JWT(BaseModel):
     """
     Настройки JWT токена.
@@ -90,6 +95,7 @@ class Settings(BaseSettings):
     cors_origins: list[str]
     test: int
     test_db: TestDb
+    google_oauth: OAuthGoogle
 
     db: Db
 
