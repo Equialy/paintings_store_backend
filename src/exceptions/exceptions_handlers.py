@@ -6,7 +6,11 @@ from fastapi.responses import ORJSONResponse
 from jose import JWTError
 from pydantic import ValidationError
 
-from src.exceptions.exception_base import NotFoundError, BorrowLimitExceededError
+from src.exceptions.exception_base import (
+    NotFoundError,
+    BorrowLimitExceededError,
+    NotValidPassword,
+)
 
 
 def register_exceptions_hanlder(app: FastAPI):
@@ -14,7 +18,7 @@ def register_exceptions_hanlder(app: FastAPI):
     def handle_validation_error(request: Request, exc: ValidationError):
         return ORJSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content={"msg": "Unhandled Error", "err": str(exc.errors())},
+            content={"msg": "Unhandled Error", "detail": str(exc.errors())},
         )
 
     # @app.exception_handler(RequestValidationError)
@@ -34,27 +38,34 @@ def register_exceptions_hanlder(app: FastAPI):
     @app.exception_handler(ValueError)
     async def handle_borrow_limit(request: Request, exc: ValueError):
         return ORJSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST, content={"msg": str(exc)}
+            status_code=status.HTTP_400_BAD_REQUEST, content={"detail": str(exc)}
         )
 
     @app.exception_handler(BorrowLimitExceededError)
     async def handle_borrow_limit(request: Request, exc: BorrowLimitExceededError):
         return ORJSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST, content={"msg": str(exc)}
+            status_code=status.HTTP_400_BAD_REQUEST, content={"detail": str(exc)}
         )
 
     @app.exception_handler(NoResultFound)
     def handle_not_found_row_db(request: Request, exc: NoResultFound):
         return ORJSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content={"msg": "Not found", "err": str(exc)},
+            content={"msg": "Not found", "detail": str(exc)},
+        )
+
+    @app.exception_handler(NotValidPassword)
+    def handle_not_found_row_db(request: Request, exc: NotValidPassword):
+        return ORJSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"msg": "Пароли не совпадают", "detail": str(exc.msg)},
         )
 
     @app.exception_handler(JWTError)
     def handle_unauthorized_error(request: Request, exc: JWTError):
         return ORJSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"msg": "invalid token", "err": str(exc)},
+            content={"msg": "invalid token", "detail": str(exc)},
         )
 
     @app.exception_handler(IntegrityError)
@@ -69,21 +80,25 @@ def register_exceptions_hanlder(app: FastAPI):
             detail = f"{str(exc.orig).split("DETAIL")[1]}. Нет в наличии"
         elif "isbn" in error_msg:
             detail = "isbn уже существует"
+        elif "duplicate key" in error_msg:
+            detail = "Такой польозватель уже существует"
         else:
             detail = "Ошибка при сохранении в базу данных"
         return ORJSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST, content={"err": detail}
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"detail": f"{detail}: {str(exc.params[0])}"},
         )
 
     @app.exception_handler(ContentTypeError)
     def handle_aiohttp_requests(request: Request, exc: ContentTypeError):
 
         return ORJSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST, content={"msg": "Wrong type JSON"}
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"detail": "Wrong type JSON"},
         )
 
     @app.exception_handler(NotFoundError)
     def handle_not_found_error(request: Request, exc: NotFoundError):
         return ORJSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND, content={"msg": exc.msg}
+            status_code=status.HTTP_404_NOT_FOUND, content={"detail": exc.msg}
         )
