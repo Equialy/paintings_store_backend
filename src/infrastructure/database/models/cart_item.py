@@ -21,7 +21,7 @@ class CartItem(Base):
     )
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     added_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+        DateTime, default=datetime.now, nullable=False
     )
 
     # связи

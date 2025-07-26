@@ -6,6 +6,7 @@ import sqlalchemy as sa
 from src.domain.accounts.schemas.user import (
     UsersSchemaAuth,
     UsersSchema,
+    UsersSchemaAdd,
 )
 from src.infrastructure.database.models.users import Users
 
@@ -29,7 +30,7 @@ class UserRepositoryImpl:
             return None
         return UsersSchema.model_validate(user_obj)
 
-    async def create_user(self, user: UsersSchemaAuth) -> UsersSchema:
+    async def create_user(self, user: UsersSchemaAdd) -> UsersSchema:
         stmt = (
             sa.insert(self.model)
             .values(user.model_dump(exclude_unset=True))

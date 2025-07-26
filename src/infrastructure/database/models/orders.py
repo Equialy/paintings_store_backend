@@ -17,7 +17,7 @@ class Order(Base):
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="Pending")
     total: Mapped[Numeric] = mapped_column(Numeric(18, 2), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
+        DateTime, default=datetime.now, nullable=False
     )
 
     user = relationship("Users", back_populates="orders")
