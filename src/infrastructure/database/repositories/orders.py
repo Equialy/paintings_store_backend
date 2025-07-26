@@ -33,7 +33,7 @@ class OrderRepositoryImpl:
             address=order.address,
             phone=order.phone,
             total=total,
-            items=items,
+            items=items,  # Добавляем данные в таблицу OrderItems
         )
         self.session.add(db_order)
         await self.session.commit()
@@ -82,12 +82,16 @@ class OrderRepositoryImpl:
         return [OrderRead.model_validate(i) for i in db_order]
 
     async def update_status(
-        self, order_id: int, status_order: OrderStatus
+        self, order_id: int, status_order: OrderStatus, payment_id, payment_url
     ) -> OrderRead:
         stmt = (
             sa.update(Order)
             .where(Order.id == order_id)
-            .values(status=status_order.value)
+            .values(
+                payment_id=payment_id,
+                payment_url=payment_url,
+                status=status_order.value,
+            )
             .options(selectinload(self.model.items))
             .returning(Order)
         )

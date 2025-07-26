@@ -21,22 +21,31 @@ class OrderBase(BaseModel):
     address: str
     phone: str
 
+
 class OrderStatus(StrEnum):
-    PENDING   = "Pending"
+    PENDING = "Pending"
+    PAID = "Paid"
     PROCESSED = "Processed"
-    SHIPPED   = "Shipped"
+    SHIPPED = "Shipped"
     DELIVERED = "Delivered"
+
 
 class OrderCreate(OrderBase):
     items: List[OrderItemCreate]
 
-    model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
+    model_config = ConfigDict(
+        from_attributes=True,
+        alias_generator=AliasGenerator(serialization_alias=to_camel),
+    )
 
 
 class OrderItemRead(OrderItemBase):
     id: int
-    model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
 
+    model_config = ConfigDict(
+        from_attributes=True,
+        alias_generator=AliasGenerator(serialization_alias=to_camel),
+    )
 
 
 class OrderRead(OrderBase):
@@ -46,12 +55,19 @@ class OrderRead(OrderBase):
     total: float
     created_at: datetime
     items: List[OrderItemRead]
+    payment_id: str | None = None
+    payment_url: str | None = None
 
-    model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
+    model_config = ConfigDict(
+        from_attributes=True,
+        alias_generator=AliasGenerator(serialization_alias=to_camel),
+    )
 
 
 class OrderStatusUpdateSchema(BaseModel):
     status: OrderStatus
 
-    model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
-
+    model_config = ConfigDict(
+        from_attributes=True,
+        alias_generator=AliasGenerator(serialization_alias=to_camel),
+    )
