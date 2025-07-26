@@ -14,7 +14,10 @@ class UsersSchema(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
+    model_config = ConfigDict(
+        from_attributes=True,
+        alias_generator=AliasGenerator(serialization_alias=to_camel),
+    )
 
 
 class UsersSchemaAdd(BaseModel):
@@ -22,7 +25,10 @@ class UsersSchemaAdd(BaseModel):
     email: str
     password: str = Field(..., min_length=4, max_length=255)
 
-    model_config = ConfigDict(from_attributes=True, alias_generator=AliasGenerator(serialization_alias=to_camel))
+    model_config = ConfigDict(
+        from_attributes=True,
+        alias_generator=AliasGenerator(serialization_alias=to_camel),
+    )
 
 
 class TokenJWT(BaseModel):
@@ -34,6 +40,10 @@ class UsersSchemaAuth(BaseModel):
     username: str = Field(..., max_length=255)
     email: str
     password: str = Field(..., min_length=4, max_length=255)
+    password2: str = Field(..., min_length=4, max_length=255)
 
-    model_config = ConfigDict(from_attributes=True, strict=True,
-                              alias_generator=AliasGenerator(serialization_alias=to_camel))
+    model_config = ConfigDict(
+        from_attributes=True,
+        strict=True,
+        alias_generator=AliasGenerator(serialization_alias=to_camel),
+    )
