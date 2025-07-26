@@ -37,6 +37,12 @@ class ApiV1Prefix(BaseModel):
     users: str = "/users"
 
 
+class Payments(BaseSettings):
+    account_id_yookassa: str
+    secret_key_yookassa: str
+    price: str
+
+
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v1: ApiV1Prefix = ApiV1Prefix()
@@ -100,6 +106,8 @@ class Settings(BaseSettings):
     db: Db
 
     jwt: JWT
+
+    payment: Payments
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
